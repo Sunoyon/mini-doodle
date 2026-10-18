@@ -1,0 +1,10 @@
+.git
+.gradle
+.idea
+.codex
+.agents
+build
+out
+*.iml
+.env
+.env.*
