@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: doodle
+      POSTGRES_USER: doodle
+      POSTGRES_PASSWORD: local-dev-only
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doodle -d doodle"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres-data:
