@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface SlotRepository extends JpaRepository<Slot, UUID> {
-    // The service holds the transaction through the related mutation.
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Slot s where s.calendar.id = :calendarId and s.id = :id")
     Optional<Slot> lock(@Param("calendarId") UUID calendarId, @Param("id") UUID id);

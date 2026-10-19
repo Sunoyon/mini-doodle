@@ -6,11 +6,13 @@ import com.doodle.minidoodle.models.Slot;
 import com.doodle.minidoodle.models.Status;
 import com.doodle.minidoodle.user.UserService;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,11 @@ public class SlotService {
     }
 
     public record CreateSlot(@NotNull OffsetDateTime start, @NotNull OffsetDateTime end,
-                             @NotNull Status status) {}
-    public record UpdateSlot(OffsetDateTime start, OffsetDateTime end, Status status) {}
+                             @NotNull Status status) {
+    }
+
+    public record UpdateSlot(OffsetDateTime start, OffsetDateTime end, Status status) {
+    }
 
     public static void validate(Instant start, Instant end) {
         if (!start.isBefore(end)) throw ApiException.badRequest("start must be before end");
