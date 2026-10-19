@@ -204,11 +204,17 @@ PATCH accepts any subset of `start`, `end`, and `status`; omitted or null fields
 
 ### Persistence
 
-Flyway owns the schema in `src/main/resources/db/migration/V1__scheduling.sql`. 
+- Flyway owns the schema in `src/main/resources/db/migration/V1__scheduling.sql`.
+- PostgreSQL’s exclusion constraint prevents overlapping slots even across concurrent inserts.
+- The calendar/start index supports range queries; aggregation processes the returned intervals in order.
 
 ### Schema definition
 
-JPA entities map users, calendars, slots, meetings, and participants. Participant identity is the composite `(meeting_id, email)`. Participants are persisted with the meeting through cascading; cancellation uses a row-counting native delete and the database's `ON DELETE CASCADE` to remove participant rows. 
+JPA entities map users, calendars, slots, meetings, and participants. Participant identity is the composite `(meeting_id, email)`. Participants are persisted with the meeting through cascading; cancellation uses a row-counting native delete and the database's `ON DELETE CASCADE` to remove participant rows.
+
+### Service
+
+One service and PostgreSQL are sufficient for hundreds of users and thousands of slots.
 
 ### Transactions and concurrency
 
@@ -223,10 +229,11 @@ The integration tests use real PostgreSQL rather than an in-memory substitute be
 
 ## Known limitations and potential extensions
 
-- No authentication, tenant isolation, invitation delivery, or participant acceptance workflow. Add identity-based authorization before exposing this as a shared service.
-- No recurring meetings, partial-slot booking, meeting editing, or multi-calendar availability intersection.
+- Booking reserves only the slot owner’s calendar; it neither checks nor blocks participants’ calendars. Supporting participant reservations would require checking and reserving the same time in every participant’s calendar within one transaction.
+- No recurring meetings are supported in this solution. 
 - No pagination or result-count limit beyond the 366-day query-window limit; dense calendars may return large responses.
 - No idempotency key for booking retries and no automatic retry policy for lock conflicts. Clients should inspect resource state after an uncertain request outcome.
 - Cancellation deletes meeting data; there is no cancellation history or audit trail.
+- No authentication, tenant isolation, invitation delivery, or participant acceptance workflow. Add identity-based authorization before exposing this as a shared service.
 - Compose provides local development infrastructure, not production secrets, TLS, database backups, or an observability stack.
 - Test coverage is not checked. It can be done using Jacoco plugin.
