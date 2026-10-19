@@ -4,11 +4,13 @@ import com.doodle.minidoodle.dtos.*;
 import com.doodle.minidoodle.models.Status;
 import com.doodle.minidoodle.slot.SlotService;
 import com.doodle.minidoodle.user.UserService;
+
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import org.springframework.web.client.RestClient;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,21 +32,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 class MeetingControllerTests {
 
-	@Value("${local.server.port}")
-	int port;
+    @Value("${local.server.port}")
+    int port;
 
-	@Autowired
-	UserService users;
+    @Autowired
+    UserService users;
 
-	@Container
-	static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
+    @Container
+    static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
 
-	@DynamicPropertySource
-	static void databaseProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", postgres::getJdbcUrl);
-		registry.add("spring.datasource.username", postgres::getUsername);
-		registry.add("spring.datasource.password", postgres::getPassword);
-	}
+    @DynamicPropertySource
+    static void databaseProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Autowired
     SlotService slots;
@@ -60,7 +63,9 @@ class MeetingControllerTests {
                 OffsetDateTime.parse("2026-11-01T11:00:00Z"), status));
     }
 
-    private RestClient client() { return RestClient.create("http://localhost:" + port); }
+    private RestClient client() {
+        return RestClient.create("http://localhost:" + port);
+    }
 
     private CreateMeeting request() {
         return new CreateMeeting(" Planning ", null, List.of("Z@example.com", "a@example.com", "A@EXAMPLE.COM"));
@@ -140,8 +145,12 @@ class MeetingControllerTests {
         try (var executor = Executors.newFixedThreadPool(2)) {
             Callable<Integer> attempt = () -> {
                 start.await();
-                try { book(user, slot.id()); return 201; }
-                catch (HttpClientErrorException ex) { return ex.getStatusCode().value(); }
+                try {
+                    book(user, slot.id());
+                    return 201;
+                } catch (HttpClientErrorException ex) {
+                    return ex.getStatusCode().value();
+                }
             };
             var first = executor.submit(attempt);
             var second = executor.submit(attempt);
@@ -162,9 +171,12 @@ class MeetingControllerTests {
         try (var executor = Executors.newFixedThreadPool(2)) {
             Callable<Integer> attempt = () -> {
                 start.await();
-                try { return client().delete().uri("/meetings/{id}", meeting.id())
-                        .retrieve().toBodilessEntity().getStatusCode().value(); }
-                catch (HttpClientErrorException ex) { return ex.getStatusCode().value(); }
+                try {
+                    return client().delete().uri("/meetings/{id}", meeting.id())
+                            .retrieve().toBodilessEntity().getStatusCode().value();
+                } catch (HttpClientErrorException ex) {
+                    return ex.getStatusCode().value();
+                }
             };
             var first = executor.submit(attempt);
             var second = executor.submit(attempt);

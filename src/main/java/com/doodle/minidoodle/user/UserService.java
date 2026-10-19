@@ -2,6 +2,7 @@ package com.doodle.minidoodle.user;
 
 import java.util.Locale;
 import java.util.UUID;
+
 import com.doodle.minidoodle.dtos.CreateUser;
 import com.doodle.minidoodle.models.Calendar;
 import com.doodle.minidoodle.models.User;

@@ -1,3 +1,3 @@
 package com.doodle.minidoodle.models;
 
-public enum Status { FREE, BUSY }
+public enum Status {FREE, BUSY}

@@ -1,6 +1,7 @@
 package com.doodle.minidoodle.models;
 
 import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,7 +29,15 @@ public class Calendar {
         this.user = user;
     }
 
-    public UUID getId() { return id; }
-    public User getUser() { return user; }
-    public UUID getUserId() { return user.getId(); }
+    public UUID getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public UUID getUserId() {
+        return user.getId();
+    }
 }

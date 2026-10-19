@@ -1,6 +1,7 @@
 package com.doodle.minidoodle.models;
 
 import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +30,15 @@ public class User {
         this.email = email;
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

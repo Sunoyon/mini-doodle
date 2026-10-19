@@ -1,6 +1,7 @@
 package com.doodle.minidoodle.dtos;
 
 import java.util.UUID;
+
 import com.doodle.minidoodle.models.User;
 
 public record UserResponse(UUID id, String name, String email) {

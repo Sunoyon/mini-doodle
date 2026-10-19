@@ -4,7 +4,9 @@ import com.doodle.minidoodle.dtos.CreateUser;
 import com.doodle.minidoodle.dtos.SlotResponse;
 import com.doodle.minidoodle.models.Status;
 import com.doodle.minidoodle.user.UserService;
+
 import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestClient;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -25,21 +28,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 class SlotControllerTests {
 
-	@Value("${local.server.port}")
-	int port;
+    @Value("${local.server.port}")
+    int port;
 
-	@Autowired
-	UserService users;
+    @Autowired
+    UserService users;
 
-	@Container
-	static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
+    @Container
+    static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
 
-	@DynamicPropertySource
-	static void databaseProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", postgres::getJdbcUrl);
-		registry.add("spring.datasource.username", postgres::getUsername);
-		registry.add("spring.datasource.password", postgres::getPassword);
-	}
+    @DynamicPropertySource
+    static void databaseProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Autowired
     JdbcClient db;
@@ -54,7 +57,7 @@ class SlotControllerTests {
 
     private SlotResponse create(RestClient client, String start, String end) {
         return client.post().body(new SlotService.CreateSlot(java.time.OffsetDateTime.parse(start),
-                java.time.OffsetDateTime.parse(end), Status.FREE))
+                        java.time.OffsetDateTime.parse(end), Status.FREE))
                 .retrieve().body(SlotResponse.class);
     }
 

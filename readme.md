@@ -67,6 +67,16 @@ Run all tests or build the executable JAR:
 
 Tests require a running Docker engine because of TestContainers. 
 
+### Continuous integration
+
+The workflow in `.github/workflows/ci.yml` runs on pushes, pull requests, and manual dispatch. It installs Temurin Java 21, checks Docker availability, and uses the committed wrapper to run `test bootJar`. Testcontainers supplies PostgreSQL; no shared database or repository secrets are needed. JUnit XML and HTML test reports are uploaded as the `test-reports` artifact, including when tests fail. A GitHub-hosted run becomes available after the workflow is pushed.
+
+To run just the coordinated concurrency tests locally:
+
+```bash
+./gradlew test --tests '*SchedulingConcurrencyTests'
+```
+
 ## API documentation and monitoring
 
 Once the application is ready:
@@ -219,3 +229,4 @@ The integration tests use real PostgreSQL rather than an in-memory substitute be
 - No idempotency key for booking retries and no automatic retry policy for lock conflicts. Clients should inspect resource state after an uncertain request outcome.
 - Cancellation deletes meeting data; there is no cancellation history or audit trail.
 - Compose provides local development infrastructure, not production secrets, TLS, database backups, or an observability stack.
+- Test coverage is not checked. It can be done using Jacoco plugin.
