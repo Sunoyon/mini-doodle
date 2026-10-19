@@ -6,10 +6,9 @@ import com.doodle.minidoodle.dtos.CreateUser;
 import com.doodle.minidoodle.models.Calendar;
 import com.doodle.minidoodle.models.User;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
+import com.doodle.minidoodle.config.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,7 +27,7 @@ public class UserService {
         try {
             user = users.saveAndFlush(user);
         } catch (DataIntegrityViolationException ex) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered", ex);
+            throw ApiException.conflict("Email already registered");
         }
         calendars.save(new Calendar(user));
         return user;
@@ -36,11 +35,11 @@ public class UserService {
 
     public User get(UUID id) {
         return users.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> ApiException.notFound("User"));
     }
 
     public Calendar calendar(UUID userId) {
         return calendars.findByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> ApiException.notFound("User"));
     }
 }

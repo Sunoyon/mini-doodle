@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -59,7 +61,8 @@ class UserControllerTests {
 
 		assertThatThrownBy(() -> client.post().uri("/users")
 				.body(new CreateUser("Alice", email)).retrieve().toBodilessEntity())
-				.isInstanceOf(HttpClientErrorException.Conflict.class);
+				.isInstanceOf(HttpClientErrorException.Conflict.class)
+				.satisfies(error -> assertProblem(error, 409, "Email already registered"));
 	}
 
 	@Test
@@ -67,10 +70,24 @@ class UserControllerTests {
 		var client = RestClient.create("http://localhost:" + port);
 		assertThatThrownBy(() -> client.post().uri("/users")
 				.body(new CreateUser(" ", "invalid")).retrieve().toBodilessEntity())
-				.isInstanceOf(HttpClientErrorException.BadRequest.class);
+				.isInstanceOf(HttpClientErrorException.BadRequest.class)
+				.satisfies(error -> assertProblem(error, 400, null));
 		assertThatThrownBy(() -> client.get().uri("/users/{id}", UUID.randomUUID())
 				.retrieve().toBodilessEntity())
-				.isInstanceOf(HttpClientErrorException.NotFound.class);
+				.isInstanceOf(HttpClientErrorException.NotFound.class)
+				.satisfies(error -> assertProblem(error, 404, "User not found"));
+	}
+
+	private static void assertProblem(Throwable error, int status, String detail) {
+		var response = (HttpClientErrorException) error;
+		assertThat(response.getResponseHeaders().getContentType())
+				.isEqualTo(MediaType.APPLICATION_PROBLEM_JSON);
+		var problem = response.getResponseBodyAs(ProblemDetail.class);
+		assertThat(problem).isNotNull();
+		assertThat(problem.getStatus()).isEqualTo(status);
+		if (detail != null) {
+			assertThat(problem.getDetail()).isEqualTo(detail);
+		}
 	}
 
 }
