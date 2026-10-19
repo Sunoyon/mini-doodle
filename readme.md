@@ -237,3 +237,5 @@ The integration tests use real PostgreSQL rather than an in-memory substitute be
 - No authentication, tenant isolation, invitation delivery, or participant acceptance workflow. Add identity-based authorization before exposing this as a shared service.
 - Compose provides local development infrastructure, not production secrets, TLS, database backups, or an observability stack.
 - Test coverage is not checked. It can be done using Jacoco plugin.
+- Prometheus metrics are exposed through Micrometer; custom business metrics such as booking outcomes and lock conflicts, along with dashboards and alerts, are potential extensions.
+- Opentemetry or Newrelic agent can be another way of monitoring the APIs and the service. 
