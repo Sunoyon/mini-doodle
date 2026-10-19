@@ -1,6 +1,7 @@
 package com.doodle.minidoodle.models;
 
 import jakarta.persistence.*;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -25,7 +26,8 @@ public class Slot {
     @Column(nullable = false, length = 4)
     private Status status;
 
-    protected Slot() {}
+    protected Slot() {
+    }
 
     public Slot(Calendar calendar, Instant start, Instant end, Status status) {
         this.calendar = calendar;
@@ -38,9 +40,27 @@ public class Slot {
         this.status = status;
     }
 
-    public UUID getId() { return id; }
-    public Calendar getCalendar() { return calendar; }
-    public Instant getStart() { return start; }
-    public Instant getEnd() { return end; }
-    public Status getStatus() { return status; }
+    public UUID getId() {
+        return id;
+    }
+
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    public Instant getStart() {
+        return start;
+    }
+
+    public Instant getEnd() {
+        return end;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
 }
